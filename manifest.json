@@ -1,0 +1,13 @@
+{
+  "name": "Viatjar segur · Llista de verificació digital",
+  "short_name": "Viatjar segur",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E7EBEC",
+  "theme_color": "#12233C",
+  "lang": "ca",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

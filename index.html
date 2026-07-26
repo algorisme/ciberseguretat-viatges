@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#12233C">
 <style>
   :root{
     --ink:#12233C;
@@ -271,11 +273,13 @@
     <ul class="items">
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Fes servir dades mòbils com a opció per defecte</strong><em>Amb les tarifes i les eSIM actuals, el wifi aliè ja gairebé mai no compensa.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desactiva la connexió automàtica a xarxes conegudes</strong><em>Clonar el nom d'una xarxa d'hotel o d'aeroport és trivial.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desactiva Bluetooth i AirDrop quan no els facis servir</strong><em>Un dispositiu visible pot rebre sol·licituds d'enviament d'arxius d'estranys o servir per localitzar-te en llocs concorreguts.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Si has d'usar wifi obert: VPN de túnel complet i DNS xifrat en mode estricte</strong><em>Canviar el DNS a un de públic no basta: la passarel·la pot manipular les peticions que van en clar abans no arribin enlloc.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Cap portal captiu no demana mai les credencials de Microsoft, Google o Apple</strong><em>Si connectar-te a una xarxa fa aparèixer aquesta pantalla, és frau per definició.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>No aprovis cap avís d'inici de sessió que no hagis demanat tu</strong><em>Aprovar un codi de dispositiu autoritza la sessió d'un altre i salta el doble factor sense robar cap contrasenya.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>No iniciïs sessió en televisors ni ordinadors de l'hotel</strong><em>I si ho has fet, tanca-la remotament des del panell del compte.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desconfia dels codis QR enganxats a sobre</strong><em>En cartes, pàrquings i terrasses s'hi sobreposen adhesius falsos.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Abans de treure diners, comprova el caixer</strong><em>Estira el lector de targeta i tapa el teclat en marcar el PIN; els caixers dins de bancs pateixen molts menys manipulacions que els de carrer.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>No publiquis la ubicació en temps real</strong><em>Explica el viatge quan ja hagis tornat.</em></span></label></li>
     </ul>
   </section>
@@ -292,6 +296,7 @@
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Revisa dispositius autoritzats i aplicacions connectades</strong><em>Treu-ne tot el que no reconeguis.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Mira els moviments de la targeta que has fet servir</strong><em>Els càrrecs fraudulents solen arribar setmanes després.</em></span></label></li>
       <li><label class="item"><input type="checkbox"><span class="txt"><strong>Canvia les contrasenyes que hagis escrit en xarxes que no controlaves</strong><em>Prioritza correu i banc.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desconfia dels missatges que citen la teva reserva real després de tornar</strong><em>És la mateixa estafa del bloc 02, ara amb dades autèntiques que has generat durant el viatge: número de reserva, hotel, dates.</em></span></label></li>
     </ul>
   </section>
 
@@ -330,7 +335,7 @@
 
 <script>
 (function(){
-  var KEY="viatjar-segur-v1";
+  var KEY="viatjar-segur-v2";
   var mem={};
   var api={
     get:function(k){ try{ return Promise.resolve(localStorage.getItem(k)); }catch(e){ return Promise.resolve(mem[k]||null); } },
@@ -376,6 +381,12 @@
     }
     render();
   }).catch(function(){ render(); });
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
 })();
 </script>
 </body>
