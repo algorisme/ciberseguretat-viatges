@@ -333,10 +333,8 @@
   var KEY="viatjar-segur-v1";
   var mem={};
   var api={
-    get:function(k){ try{ if(window.storage&&window.storage.get) return window.storage.get(k).then(function(r){return r?r.value:null;}); }catch(e){}
-                     return Promise.resolve(mem[k]||null); },
-    set:function(k,v){ try{ if(window.storage&&window.storage.set) return window.storage.set(k,v); }catch(e){}
-                     mem[k]=v; return Promise.resolve(); }
+    get:function(k){ try{ return Promise.resolve(localStorage.getItem(k)); }catch(e){ return Promise.resolve(mem[k]||null); } },
+    set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){ mem[k]=v; } return Promise.resolve(); }
   };
 
   var boxes=[].slice.call(document.querySelectorAll('.items input[type=checkbox]'));
