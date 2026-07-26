@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viatjar segur · Llista de verificació digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12233C;
+    --ink-soft:#25384F;
+    --paper:#E7EBEC;
+    --card:#FFFFFF;
+    --go:#006B54;
+    --stamp:#A83240;
+    --muted:#5C6B7A;
+    --rule:#C6CFD4;
+    --focus:#0B7BC1;
+    --pad:clamp(16px,4vw,28px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4",Georgia,serif;
+    font-size:17px;
+    line-height:1.5;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:0 var(--pad) 80px}
+
+  /* ---------- boarding pass header ---------- */
+  .pass{
+    background:var(--ink);
+    color:#EDF1F3;
+    margin:0 calc(-1 * var(--pad)) 0;
+    padding:clamp(28px,6vw,48px) var(--pad) 0;
+  }
+  .pass-inner{max-width:820px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between}
+  .eyebrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:#8FA6B8;margin:0 0 10px;
+  }
+  h1{
+    font-family:"Archivo",system-ui,sans-serif;
+    font-weight:800;font-size:clamp(34px,8vw,62px);line-height:.95;
+    letter-spacing:-.02em;margin:0;text-transform:uppercase;
+  }
+  h1 span{display:block;color:#7FB6A6}
+  .tagline{margin:14px 0 0;max-width:34ch;color:#B9C7D2;font-size:16px}
+  .stub{
+    font-family:"IBM Plex Mono",monospace;text-align:right;flex:0 0 auto;
+  }
+  .stub .count{font-size:clamp(30px,7vw,44px);font-weight:600;line-height:1;color:#fff}
+  .stub .count b{font-weight:600}
+  .stub .label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8FA6B8;margin-top:8px}
+  .tear{
+    height:22px;margin:clamp(24px,5vw,36px) calc(-1 * var(--pad)) 0;
+    background:
+      radial-gradient(circle at 11px 11px, var(--paper) 7px, transparent 7.5px) 0 0/22px 22px repeat-x;
+    background-color:var(--ink);
+  }
+  .bar{height:5px;background:#1C3149;margin:0 calc(-1 * var(--pad));overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:#7FB6A6;transition:width .35s ease}
+
+  /* ---------- threat board ---------- */
+  .board{
+    background:var(--ink-soft);color:#DDE6EC;border-radius:3px;
+    padding:clamp(18px,4vw,26px);margin:clamp(26px,6vw,40px) 0;
+  }
+  .board h2{
+    font-family:"Archivo",sans-serif;font-size:15px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;margin:0 0 4px;color:#fff;
+  }
+  .board p.lede{margin:0 0 18px;color:#A8BAC7;font-size:15px}
+  .board ol{list-style:none;margin:0;padding:0;font-family:"IBM Plex Mono",monospace}
+  .board li{
+    display:flex;gap:14px;align-items:baseline;
+    padding:11px 0;border-top:1px solid #33495F;font-size:14px;
+  }
+  .board li .n{color:#7FB6A6;font-weight:600;flex:0 0 auto}
+  .board li .t{flex:1 1 auto;color:#EEF3F6;text-transform:uppercase;letter-spacing:.04em}
+  .board li .p{flex:0 0 auto;color:#93A8B8;font-size:12px;text-align:right}
+
+  /* ---------- segments ---------- */
+  .seg{
+    background:var(--card);border:1px solid var(--rule);border-radius:3px;
+    padding:clamp(18px,4vw,28px);margin:20px 0;position:relative;overflow:hidden;
+  }
+  .seg > header{margin-bottom:6px}
+  .seg .code{
+    font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;
+  }
+  .seg h3{
+    font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;
+    letter-spacing:-.01em;font-size:clamp(21px,4.5vw,27px);margin:0;line-height:1.1;
+  }
+  .seg .why{margin:10px 0 20px;color:var(--muted);font-size:16px;max-width:60ch}
+  .stampmark{
+    position:absolute;top:16px;right:14px;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;
+    letter-spacing:.14em;color:var(--go);border:2px solid var(--go);
+    padding:5px 9px;border-radius:2px;transform:rotate(-8deg) scale(.85);
+    opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;
+  }
+  .seg.done .stampmark{opacity:.85;transform:rotate(-8deg) scale(1)}
+
+  ul.items{list-style:none;margin:0;padding:0}
+  ul.items li{border-top:1px solid #E4E9EB}
+  ul.items li:first-child{border-top:0}
+  label.item{
+    display:flex;gap:13px;align-items:flex-start;padding:13px 0;cursor:pointer;
+  }
+  label.item input{
+    appearance:none;-webkit-appearance:none;margin:3px 0 0;flex:0 0 auto;
+    width:20px;height:20px;border:1.5px solid #9AA9B4;border-radius:3px;
+    background:#fff;cursor:pointer;position:relative;
+  }
+  label.item input:checked{background:var(--go);border-color:var(--go)}
+  label.item input:checked::after{
+    content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg);
+  }
+  label.item input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  label.item .txt strong{
+    display:block;font-family:"Archivo",sans-serif;font-weight:500;
+    font-size:16.5px;line-height:1.35;
+  }
+  label.item .txt em{
+    display:block;font-style:normal;color:var(--muted);font-size:15px;margin-top:3px;
+  }
+  label.item input:checked ~ .txt strong{color:var(--muted);text-decoration:line-through;text-decoration-color:#B7C2C9}
+
+  /* ---------- myths ---------- */
+  .myths{border:1px solid var(--stamp);border-radius:3px;padding:clamp(18px,4vw,28px);margin:34px 0 20px;background:#FBF6F6}
+  .myths h3{font-family:"Archivo",sans-serif;text-transform:uppercase;font-size:clamp(20px,4.5vw,25px);margin:0 0 4px;color:var(--stamp)}
+  .myths .code{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--stamp);display:block;margin-bottom:6px}
+  .myths dl{margin:16px 0 0}
+  .myths dt{font-family:"Archivo",sans-serif;font-weight:500;font-size:16.5px;margin-top:16px;text-decoration:line-through;text-decoration-color:var(--stamp);text-decoration-thickness:1.5px}
+  .myths dd{margin:4px 0 0;color:var(--ink-soft);font-size:15.5px}
+
+  /* ---------- profiles ---------- */
+  .profiles{margin:34px 0 0}
+  .profiles h3{font-family:"Archivo",sans-serif;text-transform:uppercase;font-size:15px;letter-spacing:.1em;margin:0 0 14px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .prof{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:18px}
+  .prof b{font-family:"Archivo",sans-serif;font-size:15px;display:block;margin-bottom:6px}
+  .prof p{margin:0;font-size:15px;color:var(--muted)}
+
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 0}
+  button{
+    font-family:"Archivo",sans-serif;font-size:14px;font-weight:500;
+    background:var(--ink);color:#fff;border:0;border-radius:3px;
+    padding:11px 18px;cursor:pointer;letter-spacing:.02em;
+  }
+  button.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+  button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  footer.note{margin-top:34px;font-size:14px;color:var(--muted);border-top:1px solid var(--rule);padding-top:16px}
+  footer.note a{color:var(--ink)}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media print{
+    body{background:#fff}
+    .pass{background:#fff;color:#000}
+    .bar,.tear,.actions,.stub{display:none}
+    h1 span{color:#000}
+    .board{background:#fff;color:#000;border:1px solid #000}
+    .board li{border-color:#999}.board li .t,.board li .n,.board li .p{color:#000}
+    .seg,.prof{break-inside:avoid;border-color:#999}
+  }
+</style>
+</head>
+<body>
+
+<div class="pass">
+  <div class="pass-inner">
+    <div>
+      <p class="eyebrow">Llista de verificació · Estiu 2026</p>
+      <h1>Viatjar<span>segur</span></h1>
+      <p class="tagline">Seguretat digital abans, durant i després del viatge. Marca el que ja tens fet.</p>
+    </div>
+    <div class="stub">
+      <div class="count"><b id="done">0</b>/<span id="total">0</span></div>
+      <div class="label">Punts completats</div>
+    </div>
+  </div>
+  <div class="tear"></div>
+</div>
+<div class="bar"><i id="barfill"></i></div>
+
+<div class="wrap">
+
+  <section class="board" aria-label="Ordre real de les amenaces">
+    <h2>L'ordre real de les amenaces</h2>
+    <p class="lede">Gairebé tots els articles d'estiu el posen del revés. Ordenat per probabilitat, no per espectacularitat:</p>
+    <ol>
+      <li><span class="n">01</span><span class="t">Perdre el mòbil o que te'l robin</span><span class="p">Molt alta</span></li>
+      <li><span class="n">02</span><span class="t">Estafa que arriba pel canal legítim</span><span class="p">Alta</span></li>
+      <li><span class="n">03</span><span class="t">Manipulació de la xarxa on et connectes</span><span class="p">Mitjana</span></li>
+      <li><span class="n">04</span><span class="t">Escorcoll del dispositiu a la frontera</span><span class="p">Depèn de qui ets</span></li>
+    </ol>
+  </section>
+
+  <section class="seg" id="s1">
+    <span class="stampmark">FET</span>
+    <header>
+      <span class="code">Bloc 01 · Abans de sortir</span>
+      <h3>Preparar-ho a casa</h3>
+    </header>
+    <p class="why">Aquí hi ha la major part del valor. El desastre real no és un atac sofisticat: és perdre el telèfon i descobrir que amb ell has perdut l'accés al correu.</p>
+    <ul class="items">
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Guarda els codis de recuperació del doble factor fora del mòbil</strong><em>En paper o en un altre dispositiu. Si perds el telèfon, són l'única manera de tornar a entrar als comptes.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Comprova que la localització i l'esborrat remot funcionen</strong><em>Prova-ho abans de marxar, no quan ja no tinguis l'aparell a la mà.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Posa PIN a la SIM o a l'eSIM</strong><em>Sense això, qui tingui el telèfon té el teu número i els SMS de verificació.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Apunta en paper el número internacional de la teva operadora</strong><em>Per poder bloquejar la línia des de l'estranger sense dependre del mòbil.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Treu els comptes importants de la verificació per SMS</strong><em>Passa'ls a aplicació d'autenticació o a clau de pas.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Puja el codi de bloqueig a sis dígits o alfanumèric</strong><em>Quatre dígits es forcen en pocs minuts.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Actualitza sistema i aplicacions abans de sortir</strong><em>No des d'una xarxa que no controles.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Fes una còpia de seguretat completa</strong><em>Perquè bloquejar o esborrar el dispositiu no signifiqui perdre res.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Prepara una targeta secundària o virtual per al viatge</strong><em>Amb límit baix i avisos de cada moviment.</em></span></label></li>
+    </ul>
+  </section>
+
+  <section class="seg" id="s2">
+    <span class="stampmark">FET</span>
+    <header>
+      <span class="code">Bloc 02 · La reserva</span>
+      <h3>Allotjament i bitllets</h3>
+    </header>
+    <p class="why">El consell de sempre — «mira bé l'enllaç, busca el cadenat» — no serveix contra l'estafa dominant: els atacants entren al compte de l'hotel i t'escriuen des del xat oficial de la plataforma, amb les teves dades de reserva correctes.</p>
+    <ul class="items">
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Reserva des de l'aplicació o escrivint tu el domini</strong><em>Els primers resultats del cercador són anuncis, i hi ha dominis imitadors comprant-los.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Cap pagament fora del flux oficial de la plataforma</strong><em>Encara que el missatge arribi pel xat legítim i sàpiga el teu número de reserva.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Tracta la urgència com el senyal d'alarma</strong><em>Cap reserva real no caduca en dues hores ni s'anul·la si no «verifiques la targeta ara».</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Verifica trucant amb un número que busquis tu</strong><em>Mai el que apareix dins del missatge sospitós.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>No surtis de la plataforma per pagar</strong><em>Transferència, Bizum o criptomonedes vol dir diners irrecuperables i cap intermediari a qui reclamar.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Comprova que l'allotjament existeix</strong><em>Adreça al mapa i cerca inversa de les fotos: els anuncis falsos reciclen imatges.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desa els justificants en PDF al dispositiu</strong><em>No només al correu: els necessitaràs si et quedes sense connexió o sense accés al compte.</em></span></label></li>
+    </ul>
+  </section>
+
+  <section class="seg" id="s3">
+    <span class="stampmark">FET</span>
+    <header>
+      <span class="code">Bloc 03 · Frontera i trànsit</span>
+      <h3>Controls i escorcolls</h3>
+    </header>
+    <p class="why">Aquí l'adversari no és un delinqüent: és una autoritat amb poder legal. Les mitigacions són diferents i la teva situació depèn del teu estatus, no de la teva tecnologia.</p>
+    <ul class="items">
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Informa't del que et poden exigir segons el teu estatus</strong><em>A un visitant li poden denegar l'entrada si es nega a desbloquejar; a un ciutadà no, però li poden retenir l'aparell. Al Regne Unit, negar-s'hi pot ser delicte.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Apaga el dispositiu del tot abans del control</strong><em>Un telèfon apagat protegeix les dades molt millor que un que ja s'ha desbloquejat un cop.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desactiva la biometria i fes servir codi</strong><em>La cara i l'empremta tenen menys protecció jurídica que una contrasenya en la majoria d'ordenaments.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Decideix a casa què portes al dispositiu</strong><em>Netejar el que no vols ensenyar es fa abans de sortir, no a la cua del control.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Si ets turista, no portis un mòbil buit</strong><em>Un dispositiu sense cap rastre crida més l'atenció que un de normal i acostuma a acabar en inspecció secundària.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Si et retenen l'aparell, dona'l per compromès</strong><em>Canvia les contrasenyes des d'un altre dispositiu i tanca les sessions obertes.</em></span></label></li>
+    </ul>
+  </section>
+
+  <section class="seg" id="s4">
+    <span class="stampmark">FET</span>
+    <header>
+      <span class="code">Bloc 04 · A destinació</span>
+      <h3>Xarxes, pantalles i pagaments</h3>
+    </header>
+    <p class="why">El risc de les xarxes alienes ja no és que t'escoltin: és que et redirigeixin. Qui controla la passarel·la controla on acaba el teu navegador.</p>
+    <ul class="items">
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Fes servir dades mòbils com a opció per defecte</strong><em>Amb les tarifes i les eSIM actuals, el wifi aliè ja gairebé mai no compensa.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desactiva la connexió automàtica a xarxes conegudes</strong><em>Clonar el nom d'una xarxa d'hotel o d'aeroport és trivial.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Si has d'usar wifi obert: VPN de túnel complet i DNS xifrat en mode estricte</strong><em>Canviar el DNS a un de públic no basta: la passarel·la pot manipular les peticions que van en clar abans no arribin enlloc.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Cap portal captiu no demana mai les credencials de Microsoft, Google o Apple</strong><em>Si connectar-te a una xarxa fa aparèixer aquesta pantalla, és frau per definició.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>No aprovis cap avís d'inici de sessió que no hagis demanat tu</strong><em>Aprovar un codi de dispositiu autoritza la sessió d'un altre i salta el doble factor sense robar cap contrasenya.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>No iniciïs sessió en televisors ni ordinadors de l'hotel</strong><em>I si ho has fet, tanca-la remotament des del panell del compte.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Desconfia dels codis QR enganxats a sobre</strong><em>En cartes, pàrquings i terrasses s'hi sobreposen adhesius falsos.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>No publiquis la ubicació en temps real</strong><em>Explica el viatge quan ja hagis tornat.</em></span></label></li>
+    </ul>
+  </section>
+
+  <section class="seg" id="s5">
+    <span class="stampmark">FET</span>
+    <header>
+      <span class="code">Bloc 05 · En tornar</span>
+      <h3>Tancar el viatge</h3>
+    </header>
+    <p class="why">Cinc minuts en arribar a casa. És la part que no fa ningú i la que detecta el que hagi passat.</p>
+    <ul class="items">
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Tanca totes les sessions obertes des de cada compte</strong><em>Correu, xarxes i núvol tenen un botó per fer-ho de cop.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Revisa dispositius autoritzats i aplicacions connectades</strong><em>Treu-ne tot el que no reconeguis.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Mira els moviments de la targeta que has fet servir</strong><em>Els càrrecs fraudulents solen arribar setmanes després.</em></span></label></li>
+      <li><label class="item"><input type="checkbox"><span class="txt"><strong>Canvia les contrasenyes que hagis escrit en xarxes que no controlaves</strong><em>Prioritza correu i banc.</em></span></label></li>
+    </ul>
+  </section>
+
+  <section class="myths">
+    <span class="code">No marquis res · Descarta-ho</span>
+    <h3>Quatre tòpics que pots ignorar</h3>
+    <dl>
+      <dt>«Et robaran les dades pel carregador USB públic»</dt>
+      <dd>Els avisos institucionals no van acompanyats de casos documentats. Amb un cable només de càrrega i no acceptar cap avís de confiança n'hi ha de sobres.</dd>
+      <dt>«El wifi públic et roba les contrasenyes»</dt>
+      <dd>Fa una dècada que gairebé tot el trànsit va xifrat. El problema no és qui t'escolta, és qui et redirigeix.</dd>
+      <dt>«Amb una VPN ja estàs protegit»</dt>
+      <dd>Una VPN mou la confiança de l'hotel al proveïdor de la VPN. Ajuda contra la manipulació de la xarxa; no fa absolutament res contra el frau ni contra una frontera.</dd>
+      <dt>«El mode incògnit m'amaga»</dt>
+      <dd>No amaga res a la xarxa on estàs connectat. Només neteja l'historial del teu navegador.</dd>
+    </dl>
+  </section>
+
+  <section class="profiles">
+    <h3>Calibra-ho segons qui ets</h3>
+    <div class="grid">
+      <div class="prof"><b>Vacances</b><p>Els blocs 01 i 02 són el 90% del que necessites. La resta és opcional.</p></div>
+      <div class="prof"><b>Viatge de feina</b><p>Afegeix-hi el bloc 04 sencer: el teu compte corporatiu és l'objectiu, no tu.</p></div>
+      <div class="prof"><b>Periodisme, advocacia, activisme</b><p>El bloc 03 és el teu, i aquesta llista no substitueix un pla d'amenaces fet a mida.</p></div>
+    </div>
+    <div class="actions">
+      <button id="print">Imprimeix o desa en PDF</button>
+      <button class="ghost" id="reset">Comença de nou</button>
+    </div>
+    <footer class="note">
+      Llista de verificació d'ús lliure. El progrés es desa en aquest navegador mentre la pestanya sigui oberta.
+    </footer>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var KEY="viatjar-segur-v1";
+  var mem={};
+  var api={
+    get:function(k){ try{ if(window.storage&&window.storage.get) return window.storage.get(k).then(function(r){return r?r.value:null;}); }catch(e){}
+                     return Promise.resolve(mem[k]||null); },
+    set:function(k,v){ try{ if(window.storage&&window.storage.set) return window.storage.set(k,v); }catch(e){}
+                     mem[k]=v; return Promise.resolve(); }
+  };
+
+  var boxes=[].slice.call(document.querySelectorAll('.items input[type=checkbox]'));
+  var segs=[].slice.call(document.querySelectorAll('.seg'));
+  document.getElementById('total').textContent=boxes.length;
+
+  boxes.forEach(function(b,i){ b.dataset.i=i; });
+
+  function render(){
+    var n=0;
+    boxes.forEach(function(b){ if(b.checked) n++; });
+    document.getElementById('done').textContent=n;
+    document.getElementById('barfill').style.width=(boxes.length? (n/boxes.length*100):0)+'%';
+    segs.forEach(function(s){
+      var inSeg=[].slice.call(s.querySelectorAll('input[type=checkbox]'));
+      var all=inSeg.length>0 && inSeg.every(function(x){return x.checked;});
+      s.classList.toggle('done',all);
+    });
+  }
+
+  function save(){
+    var state=boxes.map(function(b){return b.checked?1:0;}).join('');
+    api.set(KEY,state).catch(function(){});
+  }
+
+  boxes.forEach(function(b){
+    b.addEventListener('change',function(){ render(); save(); });
+  });
+
+  document.getElementById('reset').addEventListener('click',function(){
+    boxes.forEach(function(b){ b.checked=false; });
+    render(); save();
+  });
+  document.getElementById('print').addEventListener('click',function(){ window.print(); });
+
+  Promise.resolve(api.get(KEY)).then(function(state){
+    if(typeof state==='string' && state.length===boxes.length){
+      boxes.forEach(function(b,i){ b.checked = state[i]==='1'; });
+    }
+    render();
+  }).catch(function(){ render(); });
+})();
+</script>
+</body>
+</html>
